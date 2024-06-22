@@ -1,0 +1,37 @@
+version: '3'
+services:
+  client:
+    build:
+      context: ./client
+      dockerfile: ../docker/Dockerfile.client
+    ports:
+      - "15001:3000"
+    volumes:
+      - ./client:/app
+      - /app/node_modules
+    depends_on:
+      - server
+
+  server:
+    build:
+      context: ./server
+      dockerfile: ../docker/Dockerfile.server
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./server:/app
+      - /app/node_modules
+    depends_on:
+      - mongo
+    environment:
+      - MONGODB_URI=mongodb://mongo:27017/thewheel
+
+  mongo:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+
+volumes:
+  mongodb_data:
